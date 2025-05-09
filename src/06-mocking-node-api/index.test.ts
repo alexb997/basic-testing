@@ -67,15 +67,39 @@ describe('doStuffByInterval', () => {
 });
 
 describe('readFileAsynchronously', () => {
+  const mockedJoin = path.join as jest.Mock;
+  const mockedExistsSync = fs.existsSync as jest.Mock;
+  const mockedReadFile = fsPromises.readFile as jest.Mock;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   test('should call join with pathToFile', async () => {
     // Write your test here
+    mockedJoin.mockReturnValue('/full/path/to/file');
+    mockedExistsSync.mockReturnValue(false);
+
+    await readFileAsynchronously('file.txt');
+    expect(mockedJoin).toHaveBeenCalledWith(__dirname, 'file.txt');
   });
 
   test('should return null if file does not exist', async () => {
     // Write your test here
+    mockedJoin.mockReturnValue('/full/path/to/file');
+    mockedExistsSync.mockReturnValue(false);
+
+    const result = await readFileAsynchronously('missing.txt');
+    expect(result).toBeNull();
   });
 
   test('should return file content if file exists', async () => {
     // Write your test here
+    mockedJoin.mockReturnValue('/full/path/to/file');
+    mockedExistsSync.mockReturnValue(true);
+    mockedReadFile.mockResolvedValue(Buffer.from('Hello Jest!'));
+
+    const result = await readFileAsynchronously('present.txt');
+    expect(result).toBe('Hello Jest!');
   });
 });

@@ -1,5 +1,5 @@
 // Uncomment the code below and write your tests
-import { getBankAccount, InsufficientFundsError, TransferFailedError } from '.';
+import { getBankAccount, InsufficientFundsError, TransferFailedError, SynchronizationFailedError } from '.';
 
 describe('BankAccount', () => {
   test('should create account with initial balance', () => {
@@ -54,13 +54,34 @@ describe('BankAccount', () => {
 
   test('fetchBalance should return number in case if request did not failed', async () => {
     // Write your tests here
+    const acc = getBankAccount(100);
+
+    jest.spyOn(global.Math, 'random').mockReturnValue(0.9);
+
+    
+    const balance = await acc.fetchBalance();
+    expect(typeof balance).toBe('number');
+    
+    jest.spyOn(global.Math, 'random').mockRestore();
   });
 
   test('should set new balance if fetchBalance returned number', async () => {
     // Write your tests here
+    const acc = getBankAccount(100);
+    const mockValue = 75;
+
+    jest.spyOn(acc, 'fetchBalance').mockResolvedValue(mockValue);
+    await acc.synchronizeBalance();
+
+    expect(acc.getBalance()).toBe(mockValue);
   });
 
   test('should throw SynchronizationFailedError if fetchBalance returned null', async () => {
     // Write your tests here
+    const acc = getBankAccount(100);
+
+    jest.spyOn(acc, 'fetchBalance').mockResolvedValue(null);
+
+    await expect(acc.synchronizeBalance()).rejects.toThrow(SynchronizationFailedError);
   });
 });
