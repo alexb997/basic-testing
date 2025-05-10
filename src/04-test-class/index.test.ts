@@ -1,5 +1,10 @@
 // Uncomment the code below and write your tests
+jest.mock('lodash', () => ({
+  random: jest.fn(),
+}));
+
 import { getBankAccount, InsufficientFundsError, TransferFailedError, SynchronizationFailedError } from '.';
+import * as lodash from 'lodash';
 
 describe('BankAccount', () => {
   test('should create account with initial balance', () => {
@@ -56,13 +61,14 @@ describe('BankAccount', () => {
     // Write your tests here
     const acc = getBankAccount(100);
 
-    jest.spyOn(global.Math, 'random').mockReturnValue(0.9);
+    (lodash.random as jest.Mock).mockImplementationOnce(() => 42);
+    (lodash.random as jest.Mock).mockImplementationOnce(() => 1);
 
     
     const balance = await acc.fetchBalance();
+
     expect(typeof balance).toBe('number');
-    
-    jest.spyOn(global.Math, 'random').mockRestore();
+    expect(balance).toBe(42);
   });
 
   test('should set new balance if fetchBalance returned number', async () => {
