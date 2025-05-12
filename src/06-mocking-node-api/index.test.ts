@@ -21,9 +21,10 @@ describe('doStuffByTimeout', () => {
   test('should set timeout with provided callback and timeout', () => {
     // Write your test here
     const callback = jest.fn();
+    const spy = jest.spyOn(global, 'setTimeout');
     doStuffByTimeout(callback, 1000);
-
-    expect(setTimeout).toHaveBeenCalledWith(callback, 1000);
+    expect(spy).toHaveBeenCalledWith(callback, 1000);
+    spy.mockRestore();
   });
 
   test('should call callback only after timeout', () => {
@@ -51,9 +52,10 @@ describe('doStuffByInterval', () => {
   test('should set interval with provided callback and timeout', () => {
     // Write your test here
     const callback = jest.fn();
+    const spy = jest.spyOn(global, 'setInterval');
     doStuffByInterval(callback, 1000);
-
-    expect(setInterval).toHaveBeenCalledWith(callback, 1000);
+    expect(spy).toHaveBeenCalledWith(callback, 1000);
+    spy.mockRestore();
   });
 
   test('should call callback multiple times after multiple intervals', () => {
